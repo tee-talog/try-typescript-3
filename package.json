@@ -1,5 +1,5 @@
 {
-  "name": "try-typescript-2",
+  "name": "try-typescript-3",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -13,10 +13,10 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^12.11.1",
-    "prettier": "^1.18.2",
-    "ts-node": "^8.4.1",
+    "@types/node": "^12.12.14",
+    "prettier": "^1.19.1",
+    "ts-node": "^8.5.4",
     "tslib": "^1.10.0",
-    "typescript": "^3.6.4"
+    "typescript": "^3.7.3"
   }
 }
