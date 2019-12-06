@@ -1,0 +1,24 @@
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+  text-transform: none;
+  word-wrap: break-word;
+}
+
+.reveal h1 {
+  font-size: 3em;
+}
+
+.reveal code {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.reveal ul + h4,
+.reveal ol + h4,
+.reveal dl + h4 {
+  margin-top: 30px;
+}
+
