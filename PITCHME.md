@@ -1,19 +1,21 @@
-## TypeScript 入門 〜もうちょっと詳しく編〜
+## TypeScript 入門 〜Conditional Types 編〜
 
 ---
 
 ### アジェンダ
 * 前回の復習
-* 他にどんな型があるのか
-* 他にどんな言語機能があるのか
+* keyof
+* プロパティアクセス型
+* Mapped Types
+* Conditional Types
 * 前回の質問に答える
 
 ---
 
 ### 前準備
 ```sh:Terminal
-git clone https://github.com/tee-talog/try-typescript-2.git
-cd try-typescript-2
+git clone https://github.com/tee-talog/try-typescript-3.git
+cd try-typescript-3
 npm ci
 ```
 
@@ -34,6 +36,16 @@ npx ts-node src/try1.ts
 ```
 
 ---
+
+
+
+
+// これ以降を変更する
+
+
+
+
+
 
 ### 型の書き方
 「型アノテーション」というもので型定義する。
