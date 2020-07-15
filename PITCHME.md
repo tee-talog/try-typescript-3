@@ -2,13 +2,18 @@
 
 ---
 
+## おひさ！
+
+---
+
 ### アジェンダ
-* 前回の復習
+* 前回までの復習
 * keyof
-* プロパティアクセス型
+* Indexed Access Types
 * Mapped Types
 * Conditional Types
-* 前回の質問に答える
+* 問題
+* まとめ
 
 ---
 
@@ -21,7 +26,7 @@ npm ci
 
 ---
 
-# 前回の復習
+# 前回までの復習
 
 ---
 
@@ -37,132 +42,48 @@ npx ts-node src/try1.ts
 
 ---
 
-
-
-
-// これ以降を変更する
-
-
-
-
-
-
-### 型の書き方
-「型アノテーション」というもので型定義する。
-
-`try2.ts`
+### JS との違い
+ほぼ JS、そこに型が書ける
+型に関する専用の構文や既存構文の拡張がある
 
 ```ts
-// 変数に型付けする場合
-// 変数名: 型 = 値
-const str: string = 'Hello World'
-
-// 関数に型付けする場合
-// (引数: 引数の型): 戻り値の型 => { 処理内容 }
-const add = (a: number, b: number): number => a + b
+const a: number = 1
+const func = (arg: number): void => {
+  console.log(arg)
+}
+func(a)
+// => 1
 ```
 
-型推論があり、型が自明の場合は明示的な型アノテーションの記述を省略できる。
-
 ---
 
-### 型の種類
+### いろいろな型
+大まかに 2 種類
 * プリミティブ型
-	* string（文字列）
-	* number（数値）
-	* boolean（真偽値）
-	* null
-	* undefined
-	* リテラル型
-* 配列型
-* オブジェクト型
-* 関数型
-* any
-
----
-
-### 独特な型
-* `null`, `undefined` 型
-	* TypeScript では、`null`, `undefined` は 1 つの型となっている。いわゆる **null safety**。
-* リテラル型
-	* `"1"` 型、`334` 型、`true` 型 など。
-* any 型
-	* **嘘** ※ネタです
-	* どの型でも受け入れる。
-
----
-
-### 言語機能
-* ジェネリクス
-	* 型を引数として取り、内部でそれを利用する構文。
-* クラス
-	* 説明略。
-* キャスト
-	* 別の型として扱えるようにする構文。
-* typeof 演算子
-	* JavaScript の使い方ができるとともに、型名を書く場所で使用すると、その変数の型が返ってくる。
-
----
-
-### 言語機能
-* Union Types
-	* 「◯◯型**または**☓☓型」という型
-* 省略可能なプロパティ
-	* 定義しなくてもいいプロパティを表す。
-*  デコレータ
-	* 簡単に言うと、クラスやメソッドなどに適用できる関数。
-
----
-
-### 型の種類（再掲）
-* プリミティブ型
-    * string（文字列）
-    * number（数値）
-    * boolean（真偽値）
-    * null
-    * undefined
-    * リテラル型
-* 配列型
-* オブジェクト型
-* 関数型
-* any
-
----
-
-# 他にどんな型があるのか
+* その他
 
 ---
 
 ### プリミティブ型
+* string（文字列）
+* number（数値）
+* boolean（真偽値）
+* null
+* undefined
+* リテラル型
 * symbol
 * bigint
 
 ---
 
-### symbol, bigint
-JavaScript に割と最近入った人たち。
-
-注意点として、ネイティブでこれらが実装されていないと使えない。
-
-`symbol` は ES2015、`bigint` は ES2020 で実装。
-
-`try3.ts`
-
-```ts
-{
-  const s: symbol = Symbol()
-  const bi: bigint = 100n
-}
-```
-
----
-
-### 非プリミティブ型
+### その他
+* 配列型
 * オブジェクト型
 	* オブジェクトリテラル
-		* weak type
 	* object
 	* {}
+* 関数型
+* any
 * unknown
 * タプル型
 * void
@@ -170,487 +91,720 @@ JavaScript に割と最近入った人たち。
 
 ---
 
-### オブジェクトリテラル
-前回説明したやつ。
-
-`try4.ts`
-
-```ts
-type Human = {
-  firstName: string
-  lastName: string
-}
-
-const tanaka: Human = {
-  firstName: 'Tarou',
-  lastName: 'Tanaka'
-}
-```
-
----
-
-### weak type
-省略可能なプロパティのみで構成されたオブジェクトリテラル型。
-
-代入するオブジェクトは、プロパティに存在する値しか持てない。
-
-`try5.ts`
-
-```ts
-type CliOptions = {
-  verbose?: boolean
-  row?: number
-  directory?: string
-}
-
-const options1: CliOptions = { verbose: true }
-// const options2: CliOptions = { row: 10, help: true } // Error
-const options3: CliOptions = {} // 例外として {} は代入できる
-```
-
----
-
-### `object`
-プリミティブ型と null, undefined 以外なら何でも入る。ちょっと堅い any。
-
-`try6.ts`
-
-```ts
-const obj1: object = { foo: 'foo', bar: 'bar', baz: 'baz' }
-const obj2: object = { hoge: 'hoge', fuga: 'fuga' }
-```
-
-特別な理由がない限り使わないのが吉。
-
----
-
-### `{}`
-プリミティブ型を**含む**、プロパティアクセス可能な値。
-
-つまり null, undefined 以外。
-
-`try7.ts`
-
-```ts
-const brace1: {} = { foo: 'foo', bar: 'bar', baz: 'baz' }
-const brace2: {} = { hoge: 'hoge', fuga: 'fuga' }
-const brace3: {} = 1
-const brace4: {} = 'banana'
-```
-
-特別な理由がない限り使わないのが吉。
-
----
-
-### unknown
-型安全な any。any の代わりになるべくこれを使うべき。
-
-数値計算もできなければプロパティアクセスも出来ない。
-
-`JSON.parse()` の戻り値で使ってほしい。
-
-`try8.ts`
-
-```ts
-const name: unknown = 'value'
-// console.log(name.toUpperCase()) // => Error
-if (typeof name === 'string') {
-  console.log(name.toUpperCase())
-}
-```
-
----
-
-### タプル型
-複数の値を 1 つの値として扱えるようにした型。配列の各要素に型をつけられる。
-
-関数は分けられないけど複数の値を返したいときに使える。
-
-`try9.ts`
-
-```ts
-type TwoQuestion = [string, boolean]
-const questionAndAnswer: TwoQuestion = ['あなたは人間ですか？', true]
-```
-
----
-
-### void
-なにもないことを表す型。
-
-戻り値のない関数の戻り値の型。
-
-undefined だけを値に取る。
-
-`try10.ts`
-
-```ts
-const noReturnFunction = (): void => {}
-noReturnFunction() // => undefined
-```
-
----
-
-### never
-到達しないことを表す型。
-
-いずれかの case にマッチする switch 文の default や、必ず throw される関数の戻り値の型。
-
-どんな値も never 型の変数には入れられない。
-
-この性質を利用して、switch 文等が条件を網羅できているか確かめることもできる。
-
----
-
-### never
-`try11.ts`
-
-```ts
-const value: any = 'success'
-const answer: 'success' | 'fail' = value
-
-switch (answer) {
-  case 'success':
-    console.log('ok')
-    break
-  case 'fail':
-    console.log('ng')
-    break
-  default:
-    console.log('never')
-    const test: never = answer
-}
-```
-
----
-
-# 他にどんな言語機能があるのか
-
----
-
-### 今回やるもの
+### いろいろな言語機能
+* ジェネリクス
+* クラス
+* キャスト
+* Union Types
 * Type Guard 関数
 * readonly
 * const assertion
 * Intersection Types
 * Enum
-
-#### 時間があれば
 * Optional Chaining
 * Nullish Coalescing
 
 ---
 
-### Type Guard 関数
-型を絞り込むための関数が作れる。
-
-これを使用して if 文等で絞り込みを行うと、typeof で分岐したときと同じように型が絞り込まれる。
-
-プログラミングをする人が型の安全性を保証する必要がある。
+## たくさん倒してきた
 
 ---
 
-### Type Guard 関数
-`try12.ts`
+## しかし……
+
+---
+
+## ここからが TypeScript の本領
+
+---
+
+## 今回の構文たち
+
+---
+
+### `keyof`
+その型のキーを取ってきて Union Types にする
+（index types query と言うらしい）
+単体だと意味不明な TS の構文第一位（※自分調べ）
+<small>この辺になると例題考えるのが難しい</small>
+
+```ts:try1.ts
+type MusicCreator = {
+  numberOfPeople: number
+  lyrics: string
+  composer: string
+  recordingEngineer: string
+  masteringEngineer: string
+}
+
+type MusicCreatorType = keyof MusicCreator
+// => "numberOfPeople" | "lyrics" | "composer" | "recordingEngineer" | "masteringEngineer"
+```
+
+---
+
+### Index Types
+Lookup Types とも言う
+インデックスアクセスの要領で型を参照する
+よく keyof と一緒に出てくる
+
+```ts:try2.ts
+type MusicCreator = {
+  numberOfPeople: number
+  lyrics: string
+  composer: string
+  recordingEngineer: string
+  masteringEngineer: string
+}
+
+type LyricsType = MusicCreator['lyrics']
+// => string
+```
+
+---
+
+### Mapped Types
+本領発揮
+
+その型がどんなキーを持つオブジェクトなのかを指定できる構文
+
+```ts:try3.ts
+type Nullable<T> = { [K in keyof T]: T[K] | null}
+type MusicCreator = {
+  numberOfPeople: number
+  lyrics: string
+  composer: string
+  recordingEngineer: string
+  masteringEngineer: string
+}
+
+const creators: Nullable<MusicCreator> = {
+  numberOfPeople: 1,
+  lyrics: 'John',
+  composer: null,
+  recordingEngineer: null,
+  masteringEngineer: null
+}
+```
+
+---
+
+optional にしたり、逆に optional を取ったりできる。`readonly` もつけはずしできる
+
+```ts:try4.ts
+type Optional<T> = { [K in keyof T]?: T[K] }
+type MusicCreator = {
+  readonly numberOfPeople: number
+  lyrics: string
+  composer: string
+  recordingEngineer: string
+  masteringEngineer: string
+}
+
+const creators: Optional<MusicCreator> = {
+  numberOfPeople: 1,
+  lyrics: 'John'
+}
+
+// -----
+
+type Readonly<T> = { -readonly [K in keyof T]: T[K] }
+const readonlyCreators: Readonly<MusicCreator> = {
+  numberOfPeople: 1,
+  lyrics: 'John',
+  composer: 'Smith',
+  masteringEngineer: 'Catherine',
+  recordingEngineer: 'Jessica'
+}
+readonlyCreators.numberOfPeople = 4
+```
+
+---
+
+### Conditional Types
+
+---
+
+### お　ま　た　せ
+
+---
+
+### Conditional Types
+型の条件分岐
+
+---
+
+例 1: 受け取った型が Foo 型なら Foo 型、そうでないなら Bar 型を返す型
+
+```ts:try5.ts
+type Foo = 'foo'
+type Bar = 'bar'
+type Baz = 'baz'
+type FooBar<T> = T extends Foo ? Foo : Bar
+
+type F1 = FooBar<Foo> // => Foo
+type F2 = FooBar<Bar> // => Bar
+type F3 = FooBar<Baz> // => Bar
+```
+
+---
+
+例 2: 引数に A 型の値を取り、A が B に代入できる（サブタイプ）なら A、そうでないなら B を返す関数型
+
+```ts:try6.ts
+type UndefinedFunc<A, B> = (arg: A) => A extends B ? A : B
+
+const uf1: UndefinedFunc<"a", "a" | "b"> = (arg) => "a"
+const uf2: UndefinedFunc<"a", "b" | "c"> = () => "b"
+const uf3: UndefinedFunc<true, boolean> = () => true
+```
+
+---
+
+また、`infer` を使うことで、Conditional Types の条件部でパターンマッチをして、新しい型変数を作り出すことができる
+
+```ts:try7.ts
+type ArgumentsType<T> = T extends (...args: infer U) => any ? U : T
+type A = (arg: string) => void
+type B = () => void
+type C = (arg1: string, arg2: number) => number
+type D = boolean
+
+type At1 = ArgumentsType<A> // => [string]
+type At2 = ArgumentsType<B> // => []
+type At3 = ArgumentsType<C> // => [string, number]
+type At4 = ArgumentsType<D> // => boolean
+```
+
+---
+
+### 組み込み型
+こんな面倒なことを覚えなくても、TypeScript には公式で提供されている便利な組み込み型があるので、ある程度それでまかなえるようになっている
+https://www.typescriptlang.org/docs/handbook/utility-types.html
+
+便利なやつら
+
+* `Partial`, `Required`: 渡した型のプロパティをすべて(省略可能|省略不可)にする
+* `Pick`, `Omit`: 1 つ目の型から 2 つ目の型を(抜き出す|消す)
+* `ReturnType`: 関数型を渡すと戻り値の型が返ってくる
+
+---
+
+`Partial` の例
+
+```ts:try8.ts
+type FuncOption = {
+  required: boolean
+  env: 'development' | 'production'
+}
+
+// すべてのプロパティを設定する必要がある
+const initialOption: FuncOption = {
+  required: false,
+  env: 'development'
+}
+
+// option にはすべてのプロパティを渡さなくていい
+const func = (option: Partial<FuncOption>) => {
+  const allOption = { ...option, ...initialOption }
+  //
+}
+
+func({ required: true })
+```
+
+ちなみに、type-fest という、組み込み型だけでは手が届かないようなところにアプローチしているライブラリもある
+https://github.com/sindresorhus/type-fest
+
+---
+
+実際にどんな型定義がされているのか、`ReturnType` を例に見ていく
+
+ReturnType の型定義
+https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1524
 
 ```ts
-type Human = {
+type ReturnType<T extends (...args: any) => any>
+  = T extends (...args: any) => infer R ? R : any;
+```
+
+わかりやすいね（しろめ）
+
+---
+
+公式サイトの例が分かりづらいので自分の例
+
+```ts:try9.ts
+const func = (a: string): string => a
+type F1 = ReturnType<typeof func> // => string
+type F2 = ReturnType<() => string | number> // => string | number
+type F3 = ReturnType<<T>() => T> // => unknown
+```
+
+戻り値の型を infer で仮置きしておいて、条件に一致したら本決めされる、という挙動になる
+
+---
+
+### Union Distribution
+日本語だと Union Types の分配？
+構文ではなく、Conditional Types の条件部分の extends の左が型変数だけで右側が Union Types のときに発生する現象
+
+Exclude 型の定義
+https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1494
+
+```ts
+type Exclude<T, U> = T extends U ? never : T;
+```
+
+型引数を 2 つ受け取り、1 つ目の型が 2 つ目の型のサブタイプではなかった場合、1 つ目の型を返す型
+
+never か同じ型を返す……って意味なくない？
+
+---
+
+公式サイトの例
+
+```ts
+type T0 = Exclude<'a' | 'b' | 'c', 'a'> // "b" | "c"
+type T1 = Exclude<'a' | 'b' | 'c', 'a' | 'b'> // "c"
+type T2 = Exclude<string | number | (() => void), Function> // string | number
+```
+
+Union Types を渡してあげると、「1 つ目の型が 2 つ目の型のサブタイプではなかった場合、1 つ目の型を返す」というチェックを、**それぞれの型に対して***行う
+掛け算の分配法則的なやつ
+
+ちなみに never は型の undefined みたいなもので、Union Types に入らず消える
+
+---
+
+今日やる内容はおわり
+どいつもこいつもやべぇやつばっかり
+組み込み型様を除く
+
+* `keyof`
+* Index Types
+* Mapped Types
+* Conditional Types
+* 組み込み型
+* Union Distribution
+
+---
+
+ここでちょっと休憩！
+
+---
+
+じゃあ実際に使ってみようか（にっこり）
+
+---
+
+各問題のソースは `src/questions/q（問題番号）.ts`, `src/answer/a（問題番号）.ts` にあります。
+
+### 問題 1
+`ObjKeys` は `obj` にあるキーの Union Types になっています。
+手動でキーを書くのではなく、 `obj` の定義から自動的に取ってくるようにしてください。
+
+```ts
+const obj = {
+  foo: 'foooooooo',
+  bar: 'baaaaaaar',
+  baz: 'baz?'
+}
+
+type ObjKeys = 'foo' | 'bar' | 'baz'
+```
+
++++
+
+### 問題 1 の答え
+```ts
+const obj = {
+  foo: 'foooooooo',
+  bar: 'baaaaaaar',
+  baz: 'baz?'
+}
+
+type ObjKeys = keyof typeof obj
+```
+
+---
+
+### 問題 2
+`parsonValue` に適切な型を付けてください。
+Parson 型の値とそのオブジェクトのキーを受け取って、対応する値を返す関数です。
+
+```ts
+// ここ！
+const parsonValue = (parson: any, key: any): any => parson[key]
+
+type Parson = {
   firstName: string
   lastName: string
 }
-
-const isHuman = (arg: any): arg is Human =>
-    arg != null &&
-    typeof arg.firstName === 'string' &&
-    typeof arg.lastName === 'string'
-
-const tanaka: Human | string  = {
-  firstName: 'Tarou',
-  lastName: 'Tanaka'
+const rezero: Parson = {
+  firstName: 'Subaru',
+  lastName: 'Natsuki'
 }
-// console.log(tanaka.firstName) // => Error
-if (isHuman(tanaka)) {
-  // tanaka は Human 型として扱える
-  console.log(tanaka.firstName)
+
+parsonValue(rezero, 'firstName') // => 'Subaru'
+parsonValue(rezero, 'lastName') // => 'Natsuki'
+```
+
++++
+
+### 問題 2 の答え
+```ts
+const parsonValue = <K extends keyof Parson>(
+  parson: Parson,
+  key: K
+): Parson[K] => parson[key]
+
+type Parson = {
+  firstName: string
+  lastName: string
 }
+const rezero: Parson = {
+  firstName: 'Subaru',
+  lastName: 'Natsuki'
+}
+
+parsonValue(rezero, 'firstName') // => 'Subaru'
+parsonValue(rezero, 'lastName') // => 'Natsuki'
 ```
 
 ---
 
-### readonly
-プロパティ版の const。
-
-クラス内からも getter only のプロパティ。
-
-`try13.ts`
+### 問題 3
+組み込み型 `Partial` と同じ型 `MyPartial` を定義してください。
+受け取った型のキーをすべて省略可能にする型です。
 
 ```ts
-class ReadOnlyProperty {
-  readonly zero = 0
-  one = 1
-  // error() { this.zero = 2 } // Error
+type MyPartial<T> = any // これ！
+
+type Xyz = {
+  xx: string
+  yy: number
 }
 
-const instance = new ReadOnlyProperty()
-console.log(instance.zero)
-// instance.zero = 100 // Error
+type P = MyPartial<Xyz> // => { xx?: string; yy?: number }
+```
+
++++
+
+### 問題 3 の答え
+```ts
+type MyPartial<T> = { [K in keyof T]?: T[K] }
+
+type Xyz = {
+  xx: string
+  yy: number
+}
+
+type P = MyPartial<Xyz> // => { xx?: string; yy?: number }
 ```
 
 ---
 
-### const assertion
-書き換えを意図しないことを示す。
+### 問題 4
+第二引数が partial か required かによって、第一引数のオブジェクトのプロパティを省略可能にしたり省略不可にしたりする型を定義してください。
 
-例えばオブジェクトリテラルに使った場合、プロパティが readonly になり、なるべくリテラル型・タプル型に推論される。
+```ts
+type PartialOrRequired<T, R> = any // これ！
+
+type Minna = {
+  ore: string
+  omae: string
+  marukajiri?: string
+}
+
+type Pr1 = PartialOrRequired<Minna, 'partial'> // => { ore?: string; omae?: string; marukajiri?: string }
+type Pr2 = PartialOrRequired<Minna, 'required'> // => { ore: string; omae: string; marukajiri: string }
+```
+
+* 省略可能にする型：`Partial<T>`
+* 省略不可にする型：`Required<T>`
+
++++
+
+### 問題 4 の答え
+```ts
+type PartialOrRequired<
+  T,
+  R extends 'partial' | 'required'
+> = R extends 'partial' ? Partial<T> : Required<T>
+
+type Minna = {
+  ore: string
+  omae: string
+  marukajiri?: string
+}
+
+type Pr1 = PartialOrRequired<Minna, 'partial'> // => { ore?: string; omae?: string; marukajiri?: string }
+type Pr2 = PartialOrRequired<Minna, 'required'> // => { ore: string; omae: string; marukajiri: string }
+```
 
 ---
 
-### const assertion
-`try14.ts`
+### 問題 5
+一つ目の型引数が引数の型を表していて、それに `undefined` を指定できる場合に引数が省略できる関数の型を定義してください。
 
 ```ts
-const actionCreator = (data: string) => {
-  return {
-    type: 'SET_DATA',
-    payload: { value: [data, 'payload'] }
-  } as const
+type TypedFunction<A, R> = (arg: A) => R // ここ！
+
+const func1: TypedFunction<string, number> = (arg: string) => 1
+const func2: TypedFunction<number, boolean> = (arg: number) => true
+const func3: TypedFunction<undefined, boolean> = () => true // 引数が不要
+const func4: TypedFunction<number | undefined, void> = (arg?: number) => {} // 引数を書いても書かなくてもいい
+```
+
+`undefined` を指定できる（代入できる） ＝ `undefined` のスーパータイプ
+
++++
+
+### 問題 5 の答え
+```ts
+type TypedFunction<A, R> = undefined extends A
+  ? (arg?: A) => R
+  : (arg: A) => R
+
+const func1: TypedFunction<string, number> = (arg: string) => 1
+const func2: TypedFunction<number, boolean> = (arg: number) => true
+const func3: TypedFunction<undefined, boolean> = () => true // 引数が不要
+const func4: TypedFunction<number | undefined, void> = (arg?: number) => {} // 引数を書いても書かなくてもいい
+```
+
+---
+
+### 問題 6
+ある型からメソッド名だけを抽出した型を定義してください。
+
+```ts
+type FunctionProperty<T> = any // これ！
+
+type Animal = {
+  name: string
+  age: number
+  run(): number
+  walk(): number
+  talk(): string
 }
 
-console.log(actionCreator('test'))
-/* =>
-  {
-    readonly type: 'SET_DATA',
-    readonly payload: {
-      readonly value: [string, 'payload']
+type Fp = FunctionProperty<Animal> // => 'run' | 'walk' | 'talk'
+```
+
++++
+
+### 問題 6 の答え
+```ts
+type FunctionProperty<T> = {
+  [K in keyof T]: T[K] extends Function ? K : never
+}[keyof T]
+
+type Animal = {
+  name: string,
+  age: number,
+  run(): number,
+  walk(): number,
+  talk(): string
+}
+
+FunctionProperty<Animal> // => 'run' | 'walk' | 'talk'
+```
+
+---
+
+### 問題 7
+オブジェクト型の一部のプロパティを省略可能にする型を定義してください。
+
+```ts
+type PartiallyPartial<T, K> = any // これ！
+
+type AjaxOption = {
+  method: 'get' | 'post'
+  url: string
+  data: any
+  headers: any[]
+}
+
+type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'> // => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
+```
+
++++
+
+### 問題 7 のヒント
+`{ method: 'get' | 'post'; url: string }` と `{ data?: any; headers?: any[] }` の Intersection Types
+
+`K` に指定された名前のプロパティだけのオブジェクトと、  
+`K` に指定されてない名前のプロパティだけのオブジェクト  
+を作りたい
+
+`K` に指定されてない名前のプロパティ === `T` のキーすべて - `K`
+
+https://www.typescriptlang.org/docs/handbook/utility-types.html
+
++++
+
+### 問題 7 の答え
+```ts
+type PartiallyPartial<T, K extends keyof T> = Partial<Pick<T, K>> &
+  Pick<T, Exclude<keyof T, K>>
+
+type AjaxOption = {
+  method: 'get' | 'post'
+  url: string
+  data: any
+  headers: any[]
+}
+
+type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'> // => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
+```
+
+---
+
+### 問題 8
+オブジェクト型から、最低一つは必須のオブジェクト型を生成する型を定義してください。
+
+```ts
+type AtLeastOne<T> = any // これ！
+
+type PrimaryValue = {
+  id: string
+  name: string
+  pos: { x: number; y: number }
+}
+
+type PrimaryValueAtLeastOne = AtLeastOne<PrimaryValue>
+const a: PrimaryValueAtLeastOne = { id: 'id1' }
+const b: PrimaryValueAtLeastOne = { name: 'hoge' }
+const c: PrimaryValueAtLeastOne = { pos: { x: 100, y: 200 } }
+const d: PrimaryValueAtLeastOne = { id: 'id2', pos: { x: 100, y: 200 } }
+// const x: PrimaryValueAtLeastOne = {} // コンパイルエラー
+// const x: PrimaryValueAtLeastOne = { test: 'test' } // コンパイルエラー
+```
+
+問題 7 の答えを使います
+
++++
+
+### 問題 8 のヒント
+「ある一つのキーだけ必須でそれ以外は省略可能なオブジェクト」を各キーに対して作り、それを Union すればできる。
+
+```ts
+type Answer =
+  | {
+      id: string
+      name?: string
+      pos?: { x: number; y: number }
     }
-  }
-*/
+  | {
+      id?: string
+      name: string
+      pos?: { x: number; y: number }
+    }
+  | {
+      id?: string
+      name?: string
+      pos: { x: number; y: number }
+    }
 ```
 
----
++++
 
-### Intersection Types
-交差型。Union Types の逆バージョン。
-
-「◯◯型**かつ**☓☓型」という型。
-
-既存の型を拡張するときにも使える。
-また、Union Types が絡んだときにも時々出てくる。
-
-`try15.ts`
-
+### 問題 8 の答え
 ```ts
-type Foo = { foo: string }
-type Bar = { bar: number }
-type FooBar = Foo & Bar // => { foo: string, bar: number }
+type PartiallyPartial<T, K extends keyof T> = Partial<Pick<T, K>> &
+  Pick<T, Exclude<keyof T, K>>
+type Spread<T, K extends keyof T> = K extends keyof T
+  ? PartiallyPartial<T, Exclude<keyof T, K>>
+  : never
+type AtLeastOne<T> = Spread<T, keyof T>
 
-const fb: FooBar = { foo: 'baz', bar: 10 }
-```
-
----
-
-### Enum
-他の言語とだいたい同じ。
-
-値のスタートは 0 で、任意の値を設定できる。
-
-Union Types にお株を奪われがち。
-
-`try16.ts`
-
-```ts
-enum Service {
-  Bengo4,
-  Zeiri4,
-  BusinessLawyers,
-  CloudSign
+type PrimaryValue = {
+  id: string
+  name: string
+  pos: { x: number; y: number }
 }
+
+type PrimaryValueAtLeastOne = AtLeastOne<PrimaryValue>
+const a: PrimaryValueAtLeastOne = { id: 'id1' }
+const b: PrimaryValueAtLeastOne = { name: 'hoge' }
+const c: PrimaryValueAtLeastOne = { pos: { x: 100, y: 200 } }
+const d: PrimaryValueAtLeastOne = { id: 'id2', pos: { x: 100, y: 200 } }
+// const x: PrimaryValueAtLeastOne = {} // コンパイルエラー
+// const x: PrimaryValueAtLeastOne = { test: 'test' } // コンパイルエラー
 ```
 
 +++
 
-### Optional Chaining
-TypeScript 3.7 から導入された新機能。
+別解？
 
-あるかどうかわからない（null, undefined かもしれない）ものに対してアクセスが可能。アクセス先の値か undefined が返る。
-
-<small>参考：https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a</small>
-
-`try17.ts`
-
-```ts
-const foo = { bar: 'baz' }
-const hoge = null
-
-foo?.bar // => baz
-hoge?.fuga // => undefined
+```
+npm i type-fest
 ```
 
-+++
-
-### Nullish Coalescing
-これも TypeScript 3.7 から導入された。
-
-null, undefined でなければ演算子の左側が、そうでなければ演算子の右側が返る。
-
-パラメータのデフォルト値を設定するときに重宝するはず。
-
-`try18.ts`
-
 ```ts
-const foo = 'bar'
-const hoge = null
+import { RequireAtLeastOne } from 'type-fest'
 
-foo ?? 'default' // => 'bar'
-hoge ?? 'default' // => 'default'
-```
+type AtLeastOne<T> = RequireAtLeastOne<T, keyof T>
 
----
-
-# 前回の質問に答える
-
----
-
-### 配列型の書き方はどうする？
-* Array<string>
-* string[]
-
-主に後者を利用する。
-
-理由は単純にわかりやすい・見やすいから（個人の感想）。
-
----
-
-### CloudSign で導入するときにハマったこと
-vue-loader のバージョンが古かったためか、モジュール解決がうまくいかなかった。
-
-大絶賛バージョンアップ作業中……
-
----
-
-### 型の絞り込みはどうやってやるの？
-* `typeof`
-* Type Guard 関数
-* `in`
-* `instanceof`
-* Tagged Union
-
----
-
-### `instanceof`
-`typeof` と大体同じ。
-
-右側にはコンストラクタ関数を置く。
-
-`try19.ts`
-
-```ts
-class A {
-  show() {
-    console.log('A class!')
-  }
+type PrimaryValue = {
+  id: string
+  name: string
+  pos: { x: number; y: number }
 }
-class B {}
 
-const a = new A()
-if (a instanceof A) {
-  a.show() // => A class!
-}
+type PrimaryValueAtLeastOne = AtLeastOne<PrimaryValue>
+const a: PrimaryValueAtLeastOne = { id: 'id1' }
+const b: PrimaryValueAtLeastOne = { name: 'hoge' }
+const c: PrimaryValueAtLeastOne = { pos: { x: 100, y: 200 } }
+const d: PrimaryValueAtLeastOne = { id: 'id2', pos: { x: 100, y: 200 } }
+// const x: PrimaryValueAtLeastOne = {} // コンパイルエラー
+// const x: PrimaryValueAtLeastOne = { test: 'test' } // コンパイルエラー
 ```
 
 ---
 
-### Tagged Union
-タグ付けされた Union Types。
-
-説明には Redux がよく取り上げられる気がする。（けどもうあまり使われない？）
-
 ---
 
-### Tagged Union
-`try20.ts`
+### 素朴な疑問
+Q. 実務でここまでやる必要ある？
 
-```ts
-type State = 'state'
-type SET_ACTION = { type: 'SET_ACTION'; payload: string }
-type REMOVE_ACTION = { type: 'REMOVE_ACTION'; payload: number }
-type Action = SET_ACTION | REMOVE_ACTION
-
-const reducer = (state: State, action: Action) => {
-  switch (action.type) {
-    case 'SET_ACTION': return action.payload.toUpperCase() // string
-    case 'REMOVE_ACTION': return action.payload.toFixed() // number
-    default: const test: never = action; throw new Error() // never
-  }
-}
-console.log(
-  reducer('state', {
-    type: 'SET_ACTION',
-    payload: 'value'
-  })
-)
-```
-
-+++
-
-### 余談 1：他の言語にあるやつ
-* interface ある（type とほぼ同義）
-* constructor 引数をフィールドに直接定義・代入するやつある（Kotlin とか）
-* オーバーライドある
-* オーバーロードある
-
-+++
-
-### 余談 2：JavaScript に戻れなくなりそう
-書き心地という点では戻れなくなる人が多数いる（らしい）。
-ただ、ちょっとしたスクリプトを書くときは JavaScript で書くこともある。
-
-+++
-
-また、TypeScript プロジェクトにおいて、「やっぱり JavaScript にしたい！」というニーズもないことはない。
-
-そんなときでも、コンパイル後のソースを見れば分かるが、かなりきれいな JavaScript コードが生成される。
-
-JavaScript に戻したいときでも、コンパイラオプションをしっかり調整すれば、JavaScript に戻すのもかなり楽に行える。
+A. ないです。
 
 ---
 
 ### まとめ
-いかがでしたか？（実家のような安心感）
+いかがでしたか？（暗黒微笑）
 
-TypeScript では JavaScript のつらみをなんとか解消するために独特な型があります。
+今回は TypeScript の真髄に触れました。
 
-それらを使いこなせるようになると、とても柔軟に型付けが出来て、開発がスムーズに進むようになるはずです！
+これらを使いこなせると、どうしてもここに適切な型を付けたい！となったときにつけられるようになります。
 
-困ったことがあれば気軽に私までご連絡ください！ 一緒に困ります。
+ただ、大体は組み込み型や type-fest などを使えば解決できます。
 
----
-
-# 次回 TypeScript 勉強会の予告
+すぐに諦めずに、それらを使ってどうにかできないか考えてみると、より型安全に書けるようになると思います。
 
 ---
 
-* keyof
-* プロパティアクセス型
-* Mapped Types
-* **Conditional Types**
+TypeScript の文法については（大体）終わったので、次回の TypeScript 勉強会の予定は今のところありません。
+
+もし「こういうことが聞きたい！」などあれば、アンケートに記入いただけると嬉しいです！
 
 ---
 
-## 2020 / 01 / 16（木）17:00〜 ※予定
-
----
-
-# よい TypeScript ライフを！
+# おわり
 
 +++
 
 ### 参考
 * TypeScriptの型入門
 	* https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a
-* そろそろJavaScriptに採用されそうなOptional Chainingを今さら徹底解説
-	* https://qiita.com/uhyo/items/6cd88c0ea4dc6289387a
-* Announcing TypeScript 3.7 Beta
-	* https://devblogs.microsoft.com/typescript/announcing-typescript-3-7-beta/
+* TypeScriptの型初級
+	* https://qiita.com/uhyo/items/da21e2b3c10c8a03952f
+* TypeScriptの型演習
+	* https://qiita.com/uhyo/items/e4f54ef3b87afdd65546
 * TypeScript Deep Dive 日本語版
 	* https://typescript-jp.gitbook.io/deep-dive/
+* TypeScript 練習問題集
+	* https://gist.github.com/kenmori/8cea4b82dd12ad31f565721c9c456662
+
