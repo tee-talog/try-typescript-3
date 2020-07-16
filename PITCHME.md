@@ -252,11 +252,11 @@ type F3 = FooBar<Baz> // => Bar
 例 2: 引数に A 型の値を取り、A が B に代入できる（サブタイプ）なら A、そうでないなら B を返す関数型
 
 ```ts:try6.ts
-type UndefinedFunc<A, B> = (arg: A) => A extends B ? A : B
+type SubtypeFunc<A, B> = (arg: A) => A extends B ? A : B
 
-const uf1: UndefinedFunc<"a", "a" | "b"> = (arg) => "a"
-const uf2: UndefinedFunc<"a", "b" | "c"> = () => "b"
-const uf3: UndefinedFunc<true, boolean> = () => true
+const uf1: SubtypeFunc<"a", "a" | "b"> = (arg) => "a"
+const uf2: SubtypeFunc<"a", "b" | "c"> = () => "b"
+const uf3: SubtypeFunc<true, boolean> = () => true
 ```
 
 ---
