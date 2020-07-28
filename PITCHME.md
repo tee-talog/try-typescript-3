@@ -10,6 +10,7 @@
 * 前回までの復習
 * keyof
 * Indexed Access Types
+* インデックスシグネチャ・関数シグネチャ・new シグネチャ
 * Mapped Types
 * Conditional Types
 * 問題
@@ -163,12 +164,55 @@ type LyricsType = MusicCreator['lyrics']
 
 ---
 
+### インデックスシグネチャ・関数シグネチャ・new シグネチャ
+このあとにやるものの前座
+
+オブジェクトが配列や関数の場合、オブジェクトのコンストラクタの型付けができる
+
+```ts
+type ArrayType = {
+  // キーとして使用できるのは string, number, symbol だけ
+  [key: number]: string
+}
+
+type FuncType = {
+  (arg: boolean): number
+  (arg: string): number // overloads
+}
+
+type ClassType<T> = {
+  new(): T
+}
+```
+
+---
+
 ### Mapped Types
 本領発揮
 
 その型がどんなキーを持つオブジェクトなのかを指定できる構文
 
+インデックスシグネチャにおいて、Union types をリストと見て for-in したものそれぞれが key になるイメージ
+
+```ts
+type Union = 'u' | 'n' | 'i' | 'o'
+type UnionObj = { [K in Union]: string }
+// => { u: string; n: string; i: string; o: string}
+
+/*
+// イメージ的にはこう
+type UnionObj = {
+  [key: Union]: string
+}
+*/
+```
+
+---
+
 ```ts:try3.ts
+type Original<T> = { [K in keyof T]: T[K] }
+// => Original === T
+
 type Nullable<T> = { [K in keyof T]: T[K] | null}
 type MusicCreator = {
   numberOfPeople: number
@@ -208,8 +252,8 @@ const creators: Optional<MusicCreator> = {
 
 // -----
 
-type Readonly<T> = { -readonly [K in keyof T]: T[K] }
-const readonlyCreators: Readonly<MusicCreator> = {
+type Mutable<T> = { -readonly [K in keyof T]: T[K] }
+const readonlyCreators: Mutable<MusicCreator> = {
   numberOfPeople: 1,
   lyrics: 'John',
   composer: 'Smith',
@@ -232,6 +276,8 @@ readonlyCreators.numberOfPeople = 4
 ### Conditional Types
 型の条件分岐
 
+継承関係が成り立つかどうかをチェックする
+
 ---
 
 例 1: 受け取った型が Foo 型なら Foo 型、そうでないなら Bar 型を返す型
@@ -247,6 +293,9 @@ type F2 = FooBar<Bar> // => Bar
 type F3 = FooBar<Baz> // => Bar
 ```
 
+これは簡単
+`extends` の右の型と同じ、もしくは継承してたり右の型のリテラル型だったりしたら真
+
 ---
 
 例 2: 引数に A 型の値を取り、A が B に代入できる（サブタイプ）なら A、そうでないなら B を返す関数型
@@ -259,9 +308,13 @@ const uf2: SubtypeFunc<"a", "b" | "c"> = () => "b"
 const uf3: SubtypeFunc<true, boolean> = () => true
 ```
 
+`extends` の右が Union Types の場合は、それぞれの値に対して継承関係にあるか調べるのがわかりやすい
+
 ---
 
 また、`infer` を使うことで、Conditional Types の条件部でパターンマッチをして、新しい型変数を作り出すことができる
+
+既存の型から一部分だけを抜き出したいときに使える
 
 ```ts:try7.ts
 type ArgumentsType<T> = T extends (...args: infer U) => any ? U : T
@@ -275,6 +328,9 @@ type At2 = ArgumentsType<B> // => []
 type At3 = ArgumentsType<C> // => [string, number]
 type At4 = ArgumentsType<D> // => boolean
 ```
+
+infer のところを一旦 any とおいて考えるとわかりやすい
+any を受け取って any を返す関数なら、（引数の型を U に置き換えて）U を返す（そうでなければ T を返す）
 
 ---
 
@@ -365,6 +421,8 @@ never か同じ型を返す……って意味なくない？
 公式サイトの例
 
 ```ts
+type Exclude<T, U> = T extends U ? never : T;
+
 type T0 = Exclude<'a' | 'b' | 'c', 'a'> // "b" | "c"
 type T1 = Exclude<'a' | 'b' | 'c', 'a' | 'b'> // "c"
 type T2 = Exclude<string | number | (() => void), Function> // string | number
@@ -383,6 +441,7 @@ Union Types を渡してあげると、「1 つ目の型が 2 つ目の型のサ
 
 * `keyof`
 * Index Types
+* インデックスシグネチャ・関数シグネチャ・new シグネチャ
 * Mapped Types
 * Conditional Types
 * 組み込み型
