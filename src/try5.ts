@@ -1,11 +1,10 @@
 {
-  type CliOptions = {
-    verbose?: boolean
-    row?: number
-    directory?: string
-  }
+  type Foo = 'foo'
+  type Bar = 'bar'
+  type Baz = 'baz'
+  type FooBar<T> = T extends Foo ? Foo : Bar
 
-  const options1: CliOptions = { verbose: true }
-  // const options2: CliOptions = { row: 10, help: true } // Error
-  const options3: CliOptions = {} // 例外として {} は代入できる
+  type F1 = FooBar<Foo> // => Foo
+  type F2 = FooBar<Bar> // => Bar
+  type F3 = FooBar<Baz> // => Bar
 }
