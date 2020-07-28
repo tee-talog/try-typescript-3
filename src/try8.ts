@@ -5,14 +5,14 @@
   }
 
   // すべてのプロパティを設定する必要がある
-  const initialOption: FuncOption = {
+  const defaultOption: FuncOption = {
     required: false,
     env: 'development'
   }
 
   // option にはすべてのプロパティを渡さなくていい
   const func = (option: Partial<FuncOption>) => {
-    const funcOption: FuncOption = { ...option, ...initialOption }
+    const funcOption: FuncOption = { ...option, ...defaultOption }
     //
   }
 

@@ -14,6 +14,7 @@
 * インデックスシグネチャ・関数シグネチャ・new シグネチャ
 * Mapped Types
 * Conditional Types
+  * infer
 * 問題
 * まとめ
 
@@ -198,7 +199,7 @@ type ClassType<T> = {
 ```ts
 type Union = 'u' | 'n' | 'i' | 'o'
 type UnionObj = { [K in Union]: string }
-// => { u: string; n: string; i: string; o: string}
+// => { u: string; n: string; i: string; o: string }
 
 /*
 // イメージ的にはこう
@@ -214,7 +215,7 @@ type UnionObj = {
 type Original<T> = { [K in keyof T]: T[K] }
 // => Original === T
 
-type Nullable<T> = { [K in keyof T]: T[K] | null}
+type Nullable<T> = { [K in keyof T]: T[K] | null }
 type MusicCreator = {
   numberOfPeople: number
   lyrics: string
@@ -303,7 +304,7 @@ type F3 = FooBar<Baz> // => Bar
 
 ---
 
-例 2: 引数に A 型の値を取り、A が B に代入できる（サブタイプ）なら A、そうでないなら B を返す関数型
+例 2: 引数に A 型の値を取り、A が B に代入できるなら A、そうでないなら B を返す関数型
 
 ```ts:try6.ts
 type SubtypeFunc<A, B> = (arg: A) => A extends B ? A : B
@@ -315,9 +316,12 @@ const uf3: SubtypeFunc<true, boolean> = () => true
 
 ---
 
+### infer
 また、`infer` を使うことで、Conditional Types の条件部でパターンマッチをして、新しい型変数を作り出すことができる
 
 既存の型から一部分だけを抜き出したいときに使える
+
+---
 
 infer のところを any とおくとわかりやすい  
 any を受け取って any を返す関数なら、（引数の型を U に置き換えて）U を返す
@@ -358,14 +362,14 @@ type FuncOption = {
 }
 
 // すべてのプロパティを設定する必要がある
-const initialOption: FuncOption = {
+const defaultOption: FuncOption = {
   required: false,
   env: 'development'
 }
 
 // option にはすべてのプロパティを渡さなくていい
 const func = (option: Partial<FuncOption>) => {
-  const funcOption: FuncOption = { ...option, ...initialOption }
+  const funcOption: FuncOption = { ...option, ...defaultOption }
   //
 }
 
@@ -376,7 +380,7 @@ func({ required: true })
 
 実際にどんな型定義がされているのか、`ReturnType` を例に見ていく
 
-ReturnType の型定義
+ReturnType の型定義  
 https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1524
 
 ```ts
@@ -406,7 +410,7 @@ type F3 = ReturnType<<T>() => T> // => unknown
 
 ---
 
-ちなみに、type-fest という、組み込み型だけでは手が届かないようなところにアプローチしているライブラリもある
+ちなみに、type-fest という、組み込み型だけでは手が届かないようなところにアプローチしているライブラリもある  
 https://github.com/sindresorhus/type-fest
 
 ---
@@ -415,7 +419,7 @@ https://github.com/sindresorhus/type-fest
 日本語だと Union Types の分配？  
 構文ではなく、Conditional Types の条件部分の extends の左が型変数だけで右側が Union Types のときに発生する現象
 
-Exclude 型の定義
+Exclude 型の定義  
 https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1494
 
 ```ts
@@ -424,7 +428,7 @@ type Exclude<T, U> = T extends U ? never : T;
 
 型引数を 2 つ受け取り、1 つ目の型が 2 つ目の型のサブタイプではなかった場合、1 つ目の型を返す型
 
-never か同じ型を返す……って意味なくない？
+never か同じ型を返す……ってどういう意味があるの？
 
 ---
 
@@ -454,6 +458,7 @@ Union Types を渡してあげると、「1 つ目の型が 2 つ目の型のサ
 * インデックスシグネチャ・関数シグネチャ・new シグネチャ
 * Mapped Types
 * Conditional Types
+  * infer
 * 組み込み型
 * Union Distribution
 
