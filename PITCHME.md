@@ -1,4 +1,5 @@
-## TypeScript 入門 〜Conditional Types 編〜
+## TypeScript 入門 
+## 〜Conditional Types 編〜
 
 ---
 
@@ -44,7 +45,7 @@ npx ts-node src/try1.ts
 ---
 
 ### JS との違い
-ほぼ JS、そこに型が書ける
+ほぼ JS、そこに型が書ける  
 型に関する専用の構文や既存構文の拡張がある
 
 ```ts
@@ -125,8 +126,8 @@ func(a)
 
 ### `keyof`
 その型のキーを取ってきて Union Types にする
-（index types query と言うらしい）
-単体だと意味不明な TS の構文第一位（※自分調べ）
+（index types query と言うらしい）  
+単体だと意味不明な TS の構文第一位（※自分調べ）  
 <small>この辺になると例題考えるのが難しい</small>
 
 ```ts:try1.ts
@@ -145,8 +146,8 @@ type MusicCreatorType = keyof MusicCreator
 ---
 
 ### Index Types
-Lookup Types とも言う
-インデックスアクセスの要領で型を参照する
+Lookup Types とも言う  
+インデックスアクセスの要領で型を参照する  
 よく keyof と一緒に出てくる
 
 ```ts:try2.ts
@@ -249,9 +250,13 @@ const creators: Optional<MusicCreator> = {
   numberOfPeople: 1,
   lyrics: 'John'
 }
+```
 
-// -----
+---
 
+optional にしたり、逆に optional を取ったりできる。`readonly` もつけはずしできる
+
+```ts:try4.ts
 type Mutable<T> = { -readonly [K in keyof T]: T[K] }
 const readonlyCreators: Mutable<MusicCreator> = {
   numberOfPeople: 1,
@@ -308,13 +313,14 @@ const uf2: SubtypeFunc<"a", "b" | "c"> = () => "b"
 const uf3: SubtypeFunc<true, boolean> = () => true
 ```
 
-`extends` の右が Union Types の場合は、それぞれの値に対して継承関係にあるか調べるのがわかりやすい
-
 ---
 
 また、`infer` を使うことで、Conditional Types の条件部でパターンマッチをして、新しい型変数を作り出すことができる
 
 既存の型から一部分だけを抜き出したいときに使える
+
+infer のところを any とおくとわかりやすい  
+any を受け取って any を返す関数なら、（引数の型を U に置き換えて）U を返す
 
 ```ts:try7.ts
 type ArgumentsType<T> = T extends (...args: infer U) => any ? U : T
@@ -329,20 +335,17 @@ type At3 = ArgumentsType<C> // => [string, number]
 type At4 = ArgumentsType<D> // => boolean
 ```
 
-infer のところを一旦 any とおいて考えるとわかりやすい
-any を受け取って any を返す関数なら、（引数の型を U に置き換えて）U を返す（そうでなければ T を返す）
-
 ---
 
 ### 組み込み型
-こんな面倒なことを覚えなくても、TypeScript には公式で提供されている便利な組み込み型があるので、ある程度それでまかなえるようになっている
+こんな面倒なことを覚えなくても、実は TypeScript には公式で提供されている便利な組み込み型がある
 https://www.typescriptlang.org/docs/handbook/utility-types.html
-
-便利なやつら
 
 * `Partial`, `Required`: 渡した型のプロパティをすべて(省略可能|省略不可)にする
 * `Pick`, `Omit`: 1 つ目の型から 2 つ目の型を(抜き出す|消す)
 * `ReturnType`: 関数型を渡すと戻り値の型が返ってくる
+
+etc...
 
 ---
 
@@ -362,15 +365,12 @@ const initialOption: FuncOption = {
 
 // option にはすべてのプロパティを渡さなくていい
 const func = (option: Partial<FuncOption>) => {
-  const allOption = { ...option, ...initialOption }
+  const funcOption: FuncOption = { ...option, ...initialOption }
   //
 }
 
 func({ required: true })
 ```
-
-ちなみに、type-fest という、組み込み型だけでは手が届かないようなところにアプローチしているライブラリもある
-https://github.com/sindresorhus/type-fest
 
 ---
 
@@ -390,6 +390,11 @@ type ReturnType<T extends (...args: any) => any>
 
 公式サイトの例が分かりづらいので自分の例
 
+```ts
+type ReturnType<T extends (...args: any) => any>
+  = T extends (...args: any) => infer R ? R : any;
+```
+
 ```ts:try9.ts
 const func = (a: string): string => a
 type F1 = ReturnType<typeof func> // => string
@@ -401,8 +406,13 @@ type F3 = ReturnType<<T>() => T> // => unknown
 
 ---
 
+ちなみに、type-fest という、組み込み型だけでは手が届かないようなところにアプローチしているライブラリもある
+https://github.com/sindresorhus/type-fest
+
+---
+
 ### Union Distribution
-日本語だと Union Types の分配？
+日本語だと Union Types の分配？  
 構文ではなく、Conditional Types の条件部分の extends の左が型変数だけで右側が Union Types のときに発生する現象
 
 Exclude 型の定義
@@ -428,7 +438,7 @@ type T1 = Exclude<'a' | 'b' | 'c', 'a' | 'b'> // "c"
 type T2 = Exclude<string | number | (() => void), Function> // string | number
 ```
 
-Union Types を渡してあげると、「1 つ目の型が 2 つ目の型のサブタイプではなかった場合、1 つ目の型を返す」というチェックを、**それぞれの型に対して***行う
+Union Types を渡してあげると、「1 つ目の型が 2 つ目の型のサブタイプではなかった場合、1 つ目の型を返す」というチェックを、**それぞれの型に対して**行う  
 掛け算の分配法則的なやつ
 
 ちなみに never は型の undefined みたいなもので、Union Types に入らず消える
@@ -458,6 +468,8 @@ Union Types を渡してあげると、「1 つ目の型が 2 つ目の型のサ
 ---
 
 各問題のソースは `src/questions/q（問題番号）.ts`, `src/answer/a（問題番号）.ts` にあります。
+
+---
 
 ### 問題 1
 `ObjKeys` は `obj` にあるキーの Union Types になっています。
@@ -576,8 +588,10 @@ type Minna = {
   marukajiri?: string
 }
 
-type Pr1 = PartialOrRequired<Minna, 'partial'> // => { ore?: string; omae?: string; marukajiri?: string }
-type Pr2 = PartialOrRequired<Minna, 'required'> // => { ore: string; omae: string; marukajiri: string }
+type Pr1 = PartialOrRequired<Minna, 'partial'>
+// => { ore?: string; omae?: string; marukajiri?: string }
+type Pr2 = PartialOrRequired<Minna, 'required'>
+// => { ore: string; omae: string; marukajiri: string }
 ```
 
 * 省略可能にする型：`Partial<T>`
@@ -598,8 +612,10 @@ type Minna = {
   marukajiri?: string
 }
 
-type Pr1 = PartialOrRequired<Minna, 'partial'> // => { ore?: string; omae?: string; marukajiri?: string }
-type Pr2 = PartialOrRequired<Minna, 'required'> // => { ore: string; omae: string; marukajiri: string }
+type Pr1 = PartialOrRequired<Minna, 'partial'>
+// => { ore?: string; omae?: string; marukajiri?: string }
+type Pr2 = PartialOrRequired<Minna, 'required'>
+// => { ore: string; omae: string; marukajiri: string }
 ```
 
 ---
@@ -667,7 +683,7 @@ type Animal = {
   talk(): string
 }
 
-FunctionProperty<Animal> // => 'run' | 'walk' | 'talk'
+type Fp = FunctionProperty<Animal> // => 'run' | 'walk' | 'talk'
 ```
 
 ---
@@ -685,19 +701,26 @@ type AjaxOption = {
   headers: any[]
 }
 
-type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'> // => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
+type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'>
+// => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
 ```
 
 +++
 
 ### 問題 7 のヒント
-`{ method: 'get' | 'post'; url: string }` と `{ data?: any; headers?: any[] }` の Intersection Types
+`{ method: 'get' | 'post'; url: string }` と  
+`{ data?: any; headers?: any[] }`  
+の Intersection Types
 
-`K` に指定された名前のプロパティだけのオブジェクトと、  
-`K` に指定されてない名前のプロパティだけのオブジェクト  
+* `K` に指定された名前のプロパティだけのオブジェクトと、
+* `K` に指定されてない名前のプロパティだけのオブジェクト
+
 を作りたい
 
-`K` に指定されてない名前のプロパティ === `T` のキーすべて - `K`
++++
+
+`K` に指定されてない名前のプロパティ  
+=== `T` のキーすべて - `K`
 
 https://www.typescriptlang.org/docs/handbook/utility-types.html
 
@@ -715,7 +738,8 @@ type AjaxOption = {
   headers: any[]
 }
 
-type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'> // => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
+type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'>
+// => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
 ```
 
 ---
@@ -856,6 +880,8 @@ TypeScript の文法については（大体）終わったので、次回の Ty
 +++
 
 ### 参考
+* 組み込み型（TS 公式）
+  * https://www.typescriptlang.org/docs/handbook/utility-types.html
 * TypeScriptの型入門
 	* https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a
 * TypeScriptの型初級
@@ -866,4 +892,3 @@ TypeScript の文法については（大体）終わったので、次回の Ty
 	* https://typescript-jp.gitbook.io/deep-dive/
 * TypeScript 練習問題集
 	* https://gist.github.com/kenmori/8cea4b82dd12ad31f565721c9c456662
-

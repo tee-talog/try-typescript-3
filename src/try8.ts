@@ -12,7 +12,7 @@
 
   // option にはすべてのプロパティを渡さなくていい
   const func = (option: Partial<FuncOption>) => {
-    const allOption = { ...option, ...initialOption }
+    const funcOption: FuncOption = { ...option, ...initialOption }
     //
   }
 

@@ -11,5 +11,6 @@
     headers: any[]
   }
 
-  type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'> // => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
+  type Pp = PartiallyPartial<AjaxOption, 'headers' | 'data'>
+  // => { method: 'get' | 'post'; url: string; data?: any headers?: any[] }
 }

@@ -13,6 +13,8 @@
     marukajiri?: string
   }
 
-  type Pr1 = PartialOrRequired<Minna, 'partial'> // => { ore?: string; omae?: string; marukajiri?: string }
-  type Pr2 = PartialOrRequired<Minna, 'required'> // => { ore: string; omae: string; marukajiri: string }
+  type Pr1 = PartialOrRequired<Minna, 'partial'>
+  // => { ore?: string; omae?: string; marukajiri?: string }
+  type Pr2 = PartialOrRequired<Minna, 'required'>
+  // => { ore: string; omae: string; marukajiri: string }
 }
