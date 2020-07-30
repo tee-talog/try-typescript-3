@@ -299,7 +299,7 @@ type F2 = FooBar<Bar> // => Bar
 type F3 = FooBar<Baz> // => Bar
 ```
 
-これは簡単
+これは簡単  
 `extends` の右の型と同じ、もしくは継承してたり右の型のリテラル型だったりしたら真
 
 ---
@@ -342,7 +342,7 @@ type At4 = ArgumentsType<D> // => boolean
 ---
 
 ### 組み込み型
-こんな面倒なことを覚えなくても、実は TypeScript には公式で提供されている便利な組み込み型がある
+こんな面倒なことを覚えなくても、実は TypeScript には公式で提供されている便利な組み込み型がある  
 https://www.typescriptlang.org/docs/handbook/utility-types.html
 
 * `Partial`, `Required`: 渡した型のプロパティをすべて(省略可能|省略不可)にする
@@ -417,7 +417,7 @@ https://github.com/sindresorhus/type-fest
 
 ### Union Distribution
 日本語だと Union Types の分配？  
-構文ではなく、Conditional Types の条件部分の extends の左が型変数だけで右側が Union Types のときに発生する現象
+構文ではなく、Conditional Types の条件部分の extends の左が、型変数だけかつ Union Types が渡されたときに発生する現象
 
 Exclude 型の定義  
 https://github.com/microsoft/TypeScript/blob/master/lib/lib.es5.d.ts#L1494
@@ -468,7 +468,7 @@ Union Types を渡してあげると、「1 つ目の型が 2 つ目の型のサ
 
 ---
 
-じゃあ実際に使ってみようか（にっこり）
+完全に理解したと思うので実際に使ってみる
 
 ---
 
